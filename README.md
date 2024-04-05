@@ -1,2 +1,91 @@
 # 20210830-
-git 20210830 Repository
+//git 20210830 Repository
+
+
+let cols, rows;
+let scl = 20;
+let w = 1400;
+let h = 1000;
+let flying = 0;
+let terrain = [];
+
+function setup() {
+  createCanvas(600, 600, WEBGL);
+  cols = w / scl;
+  rows = h / scl;
+
+  for (let x = 0; x < cols; x++) {
+    terrain[x] = [];
+    for (let y = 0; y < rows; y++) {
+      terrain[x][y] = 0; //specify a default value for now
+    }
+  }
+   noStroke();
+}
+
+function draw() {
+
+  flying -= 0.1;
+  let yoff = flying;
+  for (let y = 0; y < rows; y++) {
+    var xoff = 0;
+    for (let x = 0; x < cols; x++) {
+      terrain[x][y] = map(noise(xoff, yoff), 0, 1, -100, 100);
+      xoff += 0.2;
+    }
+    yoff += 0.2;
+  }
+  background(255, 128,255);
+  rotateX(PI / 3);
+  fill(164, 164, 164, 196);
+  translate(-w / 2, -h / 2);
+  for (let y = 0; y < rows - 1; y++) {
+    beginShape(TRIANGLE_STRIP);
+    for (let x = 0; x < cols; x++) {
+      let v = terrain[x][y];
+      fill(v+128, 0, 0, v+100); //투명도
+      vertex(x * scl, y * scl, terrain[x][y]);
+      vertex(x * scl, (y + 1) * scl, terrain[x][y + 1]);
+
+      }
+      endShape();
+  }
+  push(); 
+  translate(w / 2, h / 2);
+  translate(mouseX - width / 2, (mouseY - height / 2) * 6);
+  fill(0,255,0);
+  noStroke();
+  let locX = mouseX - width / 2;
+  let locY = mouseY - height / 2;
+  pointLight(255, 255, 255, 255, 255, 50); 
+  specularMaterial(250); //재질
+  shininess(50);
+
+  //로켓
+  rotateX(PI/3);
+  translate(0, 0, -20);
+  rotateX(PI / 2);
+  cylinder(40, 160);
+  translate(0, 115, 0);
+  cone(40, 70);    
+  translate(0, -190, 0);
+  cone(40, 70);
+  
+  //왼쪽
+  translate(35, 45, -5);
+  cylinder(20, 90);
+  translate(0, 65, 0);
+  cone(21, 40);    
+  translate(0, -97, 0);
+  cone(20, 40);
+  
+  //오른쪽
+  translate(-70, 35, 5);
+  cylinder(20, 90);
+  translate(0, 65, 0);
+  cone(21, 40);    
+  translate(0, -97, 0);
+  cone(20, 40);
+  pop();
+
+}
